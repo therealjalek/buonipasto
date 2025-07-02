@@ -1,0 +1,13 @@
+/* Tailwind CSS directives */
+/* Questi sono tipicamente processati da un tool di build (come PostCSS) per generare il CSS finale. */
+/* Per l'uso diretto nel browser con il CDN, le classi Tailwind sono disponibili globalmente. */
+/* Puoi aggiungere qui il tuo CSS personalizzato se necessario. */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Esempio di stile personalizzato (opzionale) */
+/* body {
+    font-family: 'Inter', sans-serif;
+} */
