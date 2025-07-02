@@ -230,16 +230,6 @@ const App = () => {
         }
     };
 
-    // Rimosso l'useEffect che chiamava saveData automaticamente ad ogni cambio di stato
-    // useEffect(() => {
-    //     if (localIsAuthReady && localDb && localUserId && localAppId) {
-    //         saveData();
-    //     } else {
-    //         console.log("SaveData useEffect: Condizioni per il salvataggio non soddisfatte (Firebase non pronto o utente non autenticato).");
-    //     }
-    // }, [initialVoucherCount, voucherValue, remainingVouchers, accumulatedScannedPrice, differenceToPay, products, localIsAuthReady, localDb, localUserId, localAppId]);
-
-
     // Funzione per impostare i valori iniziali
     const handleSetInitialValues = () => {
         if (initialVoucherCount < 0 || voucherValue < 0) {
@@ -628,7 +618,7 @@ const App = () => {
                     "p",
                     { className: "text-xl font-semibold text-gray-700" },
                     "Differenza da pagare: ",
-                    React.createElement(
+                    React.ScreateElement(
                         "span",
                         { className: "text-red-600 font-bold" },
                         differenceToPay.toFixed(2),
@@ -637,12 +627,25 @@ const App = () => {
                 )
             ),
 
+            // NUOVO Pulsante "Salva Dati Ora"
+            React.createElement(
+                "button",
+                {
+                    onClick: () => {
+                        console.log("Pulsante 'Salva Dati Ora' cliccato.");
+                        saveData();
+                    },
+                    className: "w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:scale-105 mt-6",
+                },
+                "Salva Dati Ora"
+            ),
+
             // Pulsante Reset Generale
             React.createElement(
                 "button",
                 {
                     onClick: handleResetAllData,
-                    className: "w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:scale-105 mt-6",
+                    className: "w-full bg-gray-400 text-white py-3 px-4 rounded-lg font-semibold shadow-md hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:ring-offset-2 transition duration-300 ease-in-out transform hover:scale-105 mt-4", // Aggiunto mt-4 per spazio
                 },
                 "Reset Tutti i Dati"
             ),
