@@ -163,7 +163,7 @@ const App = () => {
             const docRef = getCompatDocRef(localDb, localAppId, localUserId, "appData", "current");
             try {
                 const docSnap = await docRef.get(); // Chiama .get() sul riferimento al documento
-                if (docSnap.exists) { // CORREZIONE: accesso come proprietà, non come funzione
+                if (docSnap.exists) { // Accesso come proprietà, non come funzione
                     const data = docSnap.data();
                     setInitialVoucherCount(data.initialVoucherCount || 0);
                     setVoucherValue(data.voucherValue || 0);
@@ -227,14 +227,14 @@ const App = () => {
         }
     };
 
-    // Effetto per salvare i dati ogni volta che i dati dell'app cambiano
-    useEffect(() => {
-        if (localIsAuthReady && localDb && localUserId && localAppId) {
-            saveData();
-        } else {
-            console.log("SaveData useEffect: Condizioni per il salvataggio non soddisfatte (Firebase non pronto o utente non autenticato).");
-        }
-    }, [initialVoucherCount, voucherValue, remainingVouchers, accumulatedScannedPrice, differenceToPay, products, localIsAuthReady, localDb, localUserId, localAppId]);
+    // Rimosso l'useEffect che chiamava saveData automaticamente ad ogni cambio di stato
+    // useEffect(() => {
+    //     if (localIsAuthReady && localDb && localUserId && localAppId) {
+    //         saveData();
+    //     } else {
+    //         console.log("SaveData useEffect: Condizioni per il salvataggio non soddisfatte (Firebase non pronto o utente non autenticato).");
+    //     }
+    // }, [initialVoucherCount, voucherValue, remainingVouchers, accumulatedScannedPrice, differenceToPay, products, localIsAuthReady, localDb, localUserId, localAppId]);
 
 
     // Funzione per impostare i valori iniziali
@@ -250,7 +250,7 @@ const App = () => {
         setAccumulatedScannedPrice(0);
         setDifferenceToPay(0);
         setMessage('Valori iniziali impostati con successo!');
-        // saveData() chiamato dall'useEffect
+        saveData(); // Chiamata esplicita per salvare i dati
         setTimeout(() => setMessage(''), 3000);
     };
 
@@ -291,7 +291,7 @@ const App = () => {
         setDifferenceToPay(newDifferenceToPay);
         setScannedPrice('');
         setMessage(`Sottratto ${price.toFixed(2)}€. Totale speso: ${potentialAccumulatedScannedPrice.toFixed(2)}€. Buoni totali consumati: ${potentialTotalVouchersConsumed}. Nuovo saldo: ${newCurrentBalance.toFixed(2)}€.`);
-        // saveData() chiamato dall'useEffect
+        saveData(); // Chiamata esplicita per salvare i dati
         setTimeout(() => setMessage(''), 3000);
     };
 
@@ -309,6 +309,7 @@ const App = () => {
         setProducts(prevProducts => [...prevProducts, newProduct]);
         setNewProductText(''); // Resetta il campo di input
         setMessage('Prodotto aggiunto alla lista.');
+        saveData(); // Chiamata esplicita per salvare i dati
         setTimeout(() => setMessage(''), 2000);
     };
 
@@ -316,6 +317,7 @@ const App = () => {
     const handleProductCheck = (id) => {
         setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
         setMessage('Prodotto rimosso dalla lista.');
+        saveData(); // Chiamata esplicita per salvare i dati dopo la modifica della lista
         setTimeout(() => setMessage(''), 2000);
     };
 
