@@ -209,17 +209,20 @@ const App = () => {
         }
 
         console.log("SaveData: Tentativo di salvare i dati per l'utente:", localUserId);
+        const dataToSave = { // Dati che verranno effettivamente salvati
+            initialVoucherCount,
+            voucherValue,
+            remainingVouchers,
+            accumulatedScannedPrice,
+            differenceToPay,
+            products
+        };
+        console.log("SaveData: Dati da salvare:", dataToSave);
+
         // Usa la funzione helper per ottenere il riferimento al documento
         const docRef = getCompatDocRef(localDb, localAppId, localUserId, "appData", "current");
         try {
-            await docRef.set({ // Chiama .set() sul riferimento al documento
-                initialVoucherCount,
-                voucherValue,
-                remainingVouchers,
-                accumulatedScannedPrice,
-                differenceToPay,
-                products // Salva anche la lista prodotti
-            }, { merge: true });
+            await docRef.set(dataToSave, { merge: true }); // Chiama .set() sul riferimento al documento
             console.log("SaveData: Dati salvati con successo in Firestore.");
         } catch (e) {
             console.error("SaveData: Errore durante il salvataggio dei dati:", e); // Log dell'errore dettagliato
