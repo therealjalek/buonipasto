@@ -64,12 +64,15 @@ try {
         authInstance.onAuthStateChanged(async (user) => {
             if (user) {
                 currentUserId = user.uid;
+                console.log("Firebase Auth: Utente autenticato con UID:", currentUserId);
             } else {
                 try {
                     if (__initial_auth_token) {
                         await authInstance.signInWithCustomToken(__initial_auth_token);
+                        console.log("Firebase Auth: Autenticato con token personalizzato.");
                     } else {
                         await authInstance.signInAnonymously();
+                        console.log("Firebase Auth: Autenticato in modo anonimo.");
                     }
                 } catch (error) {
                     console.error("Errore durante l'autenticazione Firebase:", error);
@@ -139,6 +142,7 @@ const App = () => {
         const loadData = async () => {
             if (!localDb || !localUserId || !localIsAuthReady) {
                 // Se non pronto o Firebase non configurato, resetta i valori
+                console.warn("LoadData: Firebase non pronto o utente non autenticato. Dati non caricati.");
                 setInitialVoucherCount(0);
                 setVoucherValue(0);
                 setRemainingVouchers(0);
@@ -154,6 +158,7 @@ const App = () => {
             }
 
             setIsLoading(true);
+            console.log("LoadData: Tentativo di caricare i dati per l'utente:", localUserId);
             // Usa la funzione helper per ottenere il riferimento al documento
             const docRef = getCompatDocRef(localDb, localAppId, localUserId, "appData", "current");
             try {
@@ -169,6 +174,7 @@ const App = () => {
                     setCurrentBalance((data.remainingVouchers || 0) * (data.voucherValue || 0));
                     setInitialTotalValue((data.initialVoucherCount || 0) * (data.voucherValue || 0));
                     setMessage(`Dati caricati.`);
+                    console.log("LoadData: Dati caricati con successo:", data);
                 } else {
                     // Nessun dato, resetta a zero
                     setInitialVoucherCount(0);
@@ -180,9 +186,10 @@ const App = () => {
                     setInitialTotalValue(0);
                     setProducts([]);
                     setMessage(`Nessun dato trovato.`);
+                    console.log("LoadData: Nessun dato trovato per l'utente. Inizializzazione a zero.");
                 }
             } catch (e) {
-                console.error("Errore durante il caricamento dei dati:", e); // Log dell'errore dettagliato
+                console.error("LoadData: Errore durante il caricamento dei dati:", e); // Log dell'errore dettagliato
                 setMessage(`Errore durante il caricamento dei dati: ${e.message}`); // Mostra l'errore specifico nell'UI
             } finally {
                 setIsLoading(false);
@@ -197,10 +204,11 @@ const App = () => {
     // Funzione per salvare i dati su Firestore
     const saveData = async () => {
         if (!localDb || !localUserId || !localIsAuthReady || !localAppId) {
-            console.warn("Firestore non pronto o utente non autenticato. Impossibile salvare i dati.");
+            console.warn("SaveData: Firestore non pronto o utente non autenticato. Impossibile salvare i dati.");
             return;
         }
 
+        console.log("SaveData: Tentativo di salvare i dati per l'utente:", localUserId);
         // Usa la funzione helper per ottenere il riferimento al documento
         const docRef = getCompatDocRef(localDb, localAppId, localUserId, "appData", "current");
         try {
@@ -212,9 +220,9 @@ const App = () => {
                 differenceToPay,
                 products // Salva anche la lista prodotti
             }, { merge: true });
-            console.log("Dati salvati con successo.");
+            console.log("SaveData: Dati salvati con successo in Firestore.");
         } catch (e) {
-            console.error("Errore durante il salvataggio dei dati:", e); // Log dell'errore dettagliato
+            console.error("SaveData: Errore durante il salvataggio dei dati:", e); // Log dell'errore dettagliato
             setMessage(`Errore durante il salvataggio dei dati: ${e.message}`); // Mostra l'errore specifico nell'UI
         }
     };
@@ -223,6 +231,8 @@ const App = () => {
     useEffect(() => {
         if (localIsAuthReady && localDb && localUserId && localAppId) {
             saveData();
+        } else {
+            console.log("SaveData useEffect: Condizioni per il salvataggio non soddisfatte (Firebase non pronto o utente non autenticato).");
         }
     }, [initialVoucherCount, voucherValue, remainingVouchers, accumulatedScannedPrice, differenceToPay, products, localIsAuthReady, localDb, localUserId, localAppId]);
 
@@ -330,8 +340,9 @@ const App = () => {
             setInitialTotalValue(0);
             setProducts([]); // Resetta anche la lista prodotti
             setMessage(`Tutti i dati sono stati resettati con successo.`);
+            console.log("ResetAllData: Tutti i dati sono stati resettati con successo in Firestore.");
         } catch (e) {
-            console.error("Errore durante il reset di tutti i dati:", e); // Log dell'errore dettagliato
+            console.error("ResetAllData: Errore durante il reset di tutti i dati:", e); // Log dell'errore dettagliato
             setMessage(`Errore durante il reset di tutti i dati: ${e.message}`); // Mostra l'errore specifico nell'UI
         } finally {
             setTimeout(() => setMessage(''), 3000);
